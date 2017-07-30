@@ -1,0 +1,44 @@
+{% include 'header.html' %}
+
+    <!-- main content -->
+    <div class ="wrapper">
+     <div class="container">
+         {% block message %}
+             {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                        <div class="alert alert-{{category}} alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            {{ message }}
+                        </div>
+                        </div>
+                     </div>
+                    {% endfor %}
+                {% endif %}
+             {% endwith %}
+         {% endblock message %}
+
+         <div class="row">
+            <div class="page-header text-center col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1>
+                    {% block page_title %}
+                    Hello.
+                    {% endblock %}
+                </h1>
+            </div>
+         </div>
+
+         {% block main %}
+         {% endblock main %}
+
+         {% block add_rows %}
+         {% endblock add_rows %}
+
+    </div>
+        </div>
+{% include 'footer.html' %}
+
