@@ -1,0 +1,8 @@
+Flask
+Flask-Login
+Flask-SQLAlchemy
+SQLAlchemy
+requests
+Flask-WTF
+mysqlclient
+PyMySQL

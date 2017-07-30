@@ -1,0 +1,23 @@
+    {% include "analytics.html" %}
+        <footer>
+            {% block js %}
+            <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+            <script type="text/x-mathjax-config">
+                  MathJax.Hub.Config({
+                  "HTML-CSS": {
+                  styles: {
+                  ".MathJax .mo, .MathJax .mi": {color: "black ! important"}}
+                  },
+                  tex2jax: {inlineMath: [['$','$'], ['\\\\(','\\\\)']],processEscapes: true}
+                  });
+            </script>
+            {% endblock js %}
+            {% block extrajs %}
+            {% endblock extrajs %}
+
+            <div class="container-footer">
+                <div id="git-version">{{ config.GITVERSION }}</div>
+            </div>
+        </footer>
+    </body>
+</html>
