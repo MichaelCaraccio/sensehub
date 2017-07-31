@@ -32,10 +32,12 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(128))
+    privilege = db.Column(db.Integer)
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, privilege=0):
         self.username = username
         self.password = Salting.get_salted_password(password)
+        self.privilege = privilege
 
     def __repr__(self):
         return "<User %r>" % self.username
@@ -67,3 +69,43 @@ class User(db.Model):
             return str(self.id)
         except AttributeError:
             raise NotImplementedError('No `id` attribute - override `get_id`')
+
+class Group(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128))
+
+class Sensor(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
+    group = db.relationship('Group', backref=db.backref('sensors', lazy='dynamic'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', backref=db.backref('sensors', lazy='dynamic'))
+    name = db.Column(db.String(128))
+    key = db.Column(db.String(128))
+    hardware_type = db.Column(db.String(128))
+    is_public = db.Column(db.Boolean)
+    type = db.Column(db.String(20))
+    last_ping = db.Column(db.DateTime)
+    meta = db.Column(db.Text)
+    IP = db.Column(db.String(15))
+
+class Value(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
+    sensor = db.relationship('Sensor', backref=db.backref('values', lazy='dynamic'))
+    type = db.Column(db.String(128))
+    value = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime)
+    meta = db.Column(db.Text)
+
+class GroupSensorRelation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    group_id = db.Column('group_id', db.Integer, db.ForeignKey('group.id'))
+    user_id = db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+    sensor_id = db.Column('sensor_id', db.Integer, db.ForeignKey('sensor.id'))
+
+class GroupRoleRelation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    group_id = db.Column('group_id', db.Integer, db.ForeignKey('group.id'))
+    user_id = db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+    privilege = db.Column('privilege', db.Integer)
