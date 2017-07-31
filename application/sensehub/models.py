@@ -75,6 +75,9 @@ class Group(db.Model):
     def __init__(self, name):
         self.name = name
 
+    def __repr__(self):
+        return "<Group %r>" % self.id
+
 
 class Sensor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -97,6 +100,8 @@ class Sensor(db.Model):
         self.type = type
         self.meta = meta
 
+    def __repr__(self):
+        return "<Sensor %r>" % self.id
 
 class Value(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -114,6 +119,9 @@ class Value(db.Model):
         self.timestamp = datetime_obj
         self.meta = meta
 
+    def __repr__(self):
+        return "<Value %r>" % self.id
+
 class GroupSensorRelation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column('group_id', db.Integer, db.ForeignKey('group.id'))
@@ -122,6 +130,9 @@ class GroupSensorRelation(db.Model):
     def __init__(self, group, sensor):
         self.group_id = group.id
         self.sensor_id = sensor.id
+
+    def __repr__(self):
+        return "<GroupSensorRelation %r>" % self.id
 
 class GroupRoleRelation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -133,3 +144,6 @@ class GroupRoleRelation(db.Model):
         self.group_id = group.id
         self.user_id = user.id
         self.privilege = privilege
+
+    def __repr__(self):
+        return "<GroupRoleRelation %r>" % self.id

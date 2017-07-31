@@ -10,6 +10,7 @@ from sensehub.models import GroupSensorRelation as GroupSensorRelation
 from sensehub.models import Sensor as Sensor
 from sensehub.models import Value as Value
 import passwords
+import time
 
 def create_users():
     list_users = []
@@ -45,27 +46,35 @@ def create_sensors(users, groups):
     db.session.add(sensor1)
     db.session.commit()
     add_sensor_to_group(sensor1, groups[0])
+
+
     sensor2 = Sensor(users[1], "Sensor 2",
                      "Hardware type 2", True, "Type 2", "Meta 2")
     db.session.add(sensor2)
     db.session.commit()
     add_sensor_to_group(sensor2, groups[1])
+
+
     sensor3 = Sensor(users[1], "Sensor 3",
                      "Hardware type 2", False, "Type 2", "Meta 2")
     db.session.add(sensor3)
     db.session.commit()
-    add_sensor_to_group(sensor3, groups[1])
+    add_sensor_to_group(sensor3, groups[0])
+
+
     sensor4 = Sensor(users[1], "Sensor 4",
                      "Hardware type 2", False, "Type 2", "Meta 2")
     db.session.add(sensor4)
     db.session.commit()
     add_sensor_to_group(sensor4, groups[1])
+
+
     sensor5 = Sensor(users[1], "Sensor 5",
                      "Hardware type 2", False, "Type 2", "Meta 2")
     db.session.add(sensor5)
     db.session.commit()
     add_sensor_to_group(sensor5, groups[0])
-    db.session.commit()
+
     return [sensor1, sensor2, sensor3, sensor4, sensor5]
 
 
@@ -75,6 +84,7 @@ def create_values(sensors):
             value = Value(sensor, sensor.type, "Value %d" %
                           i, datetime.utcnow(), "Meta %d" % i)
             db.session.add(value)
+            time.sleep(1)
     db.session.commit()
 
 

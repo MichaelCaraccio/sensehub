@@ -24,6 +24,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 import sensehub.views
+import sensehub.routes_api
 import sensehub.views_login
 import sensehub.errors
 import sensehub.models
