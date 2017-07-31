@@ -3,8 +3,6 @@ from sensehub import db, login_manager
 from sensehub.localconstants import salt
 import hashlib
 from flask_login import LoginManager, login_user, logout_user
-import uuid
-import sys
 
 class Salting(object):
     _salt = str(salt.encode('utf-8'))
@@ -74,10 +72,12 @@ class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
 
+    def __init__(self, name):
+        self.name = name
+
+
 class Sensor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-    group = db.relationship('Group', backref=db.backref('sensors', lazy='dynamic'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', backref=db.backref('sensors', lazy='dynamic'))
     name = db.Column(db.String(128))
@@ -87,7 +87,16 @@ class Sensor(db.Model):
     type = db.Column(db.String(20))
     last_ping = db.Column(db.DateTime)
     meta = db.Column(db.Text)
-    IP = db.Column(db.String(15))
+    ip = db.Column(db.String(15))
+
+    def __init__(self, user, name, hardware_type, is_public, type, meta):
+        self.user_id = user.id
+        self.name = name
+        self.hardware_type = hardware_type
+        self.is_public = is_public
+        self.type = type
+        self.meta = meta
+
 
 class Value(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -98,14 +107,29 @@ class Value(db.Model):
     timestamp = db.Column(db.DateTime)
     meta = db.Column(db.Text)
 
+    def __init__(self, sensor, type, value, datetime_obj, meta):
+        self.sensor_id = sensor.id
+        self.type = type
+        self.value = value
+        self.timestamp = datetime_obj
+        self.meta = meta
+
 class GroupSensorRelation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column('group_id', db.Integer, db.ForeignKey('group.id'))
-    user_id = db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
     sensor_id = db.Column('sensor_id', db.Integer, db.ForeignKey('sensor.id'))
+
+    def __init__(self, group, sensor):
+        self.group_id = group.id
+        self.sensor_id = sensor.id
 
 class GroupRoleRelation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column('group_id', db.Integer, db.ForeignKey('group.id'))
     user_id = db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
     privilege = db.Column('privilege', db.Integer)
+
+    def __init__(self, group, user, privilege=0):
+        self.group_id = group.id
+        self.user_id = user.id
+        self.privilege = privilege
