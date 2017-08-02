@@ -18,6 +18,14 @@ from sqlalchemy import desc
 # Utils
 #############################################################
 
+def error_json(message):
+    return jsonify({"status": "error", "error_value": message})
+
+
+def ok_json(message=''):
+    return jsonify({"status": "ok", "message": message})
+
+
 def authenticate_sensor(sensor_id, key):
     sensor = Sensor.query.get(sensor_id)
     if sensor is None:
@@ -40,9 +48,9 @@ def route_api_ping():
         key = form['key']
         sensor = authenticate_sensor(sensor_id, key)
         sensor.last_ping = datetime.utcnow()
-        return jsonify({"status": "ok"})
+        return ok_json()
     except ValueError as e:
-        return jsonify({"status": "error", "errorValue": str(e)})
+        return error_json(str(e))
 
 
 #############################################################
@@ -59,7 +67,7 @@ def parse_json_value(sensor, json_value):
         raise ValueError("Could not parse json")
 
 
-@app.route("/api/newValue/", methods=["PUT"])
+@app.route("/api/new_value/", methods=["PUT"])
 def route_api_new_value():
     try:
         form = request.form
@@ -67,9 +75,9 @@ def route_api_new_value():
         key = form['key']
         sensor = authenticate_sensor(sensor_id, key)
         parse_json_value(sensor, form['value'])
-        return jsonify({"status": "ok"})
+        return ok_json()
     except ValueError as e:
-        return jsonify({"status": "error", "errorValue": str(e)})
+        return error_json(str(e))
 
 #############################################################
 # Get Sensors
@@ -117,10 +125,10 @@ def route_api_sensors():
         to_out = []
         for sensor in set_sensors:
             to_out.append(sensor.id)
-        return jsonify(to_out)  # TODO: add some infos
+        return ok_json(to_out)  # TODO: add some infos
 
     except ValueError as e:
-        return jsonify({"status": "error", "errorValue": str(e)})
+        return error_json(str(e))
 
 
 @app.route("/api/sensor/<int:sensor_id>", methods=["GET"])
@@ -137,7 +145,7 @@ def route_api_sensor(sensor_id):
             value = Value.query.filter_by(sensor_id=sensor_id).order_by(
                 desc(Value.timestamp)).first()
             to_out = [value.value]  # TODO: add some infos
-            return jsonify(to_out)
+            return ok_json(to_out)
 
         else:
             values = Value.query.filter_by(sensor_id=sensor_id).filter(
@@ -145,7 +153,7 @@ def route_api_sensor(sensor_id):
             to_out = []
             for value in values:
                 to_out.append(value.id)  # TODO: add some infos
-            return jsonify(to_out)
+            return ok_json(to_out)
 
     except ValueError as e:
-        return jsonify({"status": "error", "errorValue": str(e)})
+        return error_json(str(e))
