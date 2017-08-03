@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-import sys
+import sys, os, base64
 
 from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_login import current_user, login_required
@@ -12,6 +12,8 @@ from sensehub.models import Value as Value
 from sensehub.models import GroupSensorRelation as GroupSensorRelation
 from sensehub.models import GroupRoleRelation as GroupRoleRelation
 from sqlalchemy import desc
+
+from werkzeug.utils import secure_filename
 
 
 #############################################################
@@ -40,12 +42,12 @@ def authenticate_sensor(sensor_id, key):
 #############################################################
 
 
-@app.route("/api/ping/", methods=["PUT"])
+@app.route("/api/ping", methods=["PUT"])
 def route_api_ping():
     try:
-        form = request.form
-        sensor_id = form['id']
-        key = form['key']
+        form = request.get_json()
+        sensor_id = form.get('id')
+        key = form.get('key')
         sensor = authenticate_sensor(sensor_id, key)
         sensor.last_ping = datetime.utcnow()
         return ok_json()
@@ -59,18 +61,26 @@ def route_api_ping():
 
 def parse_json_value(sensor, json_value):
     try:
+        if json_value['type'] == 'image':
+            root = '/app/sensehub'
+            filename = secure_filename(str(sensor.id) + "_image.jpeg")
+            path = os.path.join(root + '/static/uploads/sensor_images', secure_filename(filename))
+            with open(path, "wb+") as fh:
+                fh.write(base64.b64decode(json_value['value']))
+            json_value['value'] = path[len(root):]
+
         value = Value(sensor, json_value['type'], json_value[
                       'value'], json_value['timestamp'], json_value['meta'])
         db.session.add(value)
-        db.commit()
-    except:
-        raise ValueError("Could not parse json")
+        db.session.commit()
+    except BaseException as e:
+        raise ValueError("Could not parse json" + str(e))
 
 
-@app.route("/api/new_value/", methods=["PUT"])
+@app.route("/api/new_value", methods=["PUT"])
 def route_api_new_value():
     try:
-        form = request.form
+        form = request.get_json()
         sensor_id = form['id']
         key = form['key']
         sensor = authenticate_sensor(sensor_id, key)

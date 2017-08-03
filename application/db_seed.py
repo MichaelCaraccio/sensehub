@@ -50,6 +50,7 @@ def create_sensors(users, groups):
 
     sensor2 = Sensor(users[1], "Sensor 2",
                      "Hardware type 2", True, "Type 2", "Meta 2")
+    sensor2.key = "1234"
     db.session.add(sensor2)
     db.session.commit()
     add_sensor_to_group(sensor2, groups[1])
@@ -84,7 +85,7 @@ def create_values(sensors):
             value = Value(sensor, sensor.type, "Value %d" %
                           i, datetime.utcnow(), "Meta %d" % i)
             db.session.add(value)
-            time.sleep(1)
+            #time.sleep(1)
     db.session.commit()
 
 
