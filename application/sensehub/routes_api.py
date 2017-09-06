@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-import sys, os, base64
+import sys
+import os
+import base64
+import hashlib
 
 from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_login import current_user, login_required
@@ -37,6 +40,10 @@ def authenticate_sensor(sensor_id, key):
     else:
         raise ValueError('Could not authenticate sensor')
 
+def print_flask(*args, **kwargs):
+    print(*args, **kwargs)
+    sys.stdout.flush()
+
 #############################################################
 # Ping
 #############################################################
@@ -64,16 +71,36 @@ def parse_json_value(sensor, json_value):
         if json_value['type'] == 'image':
             root = '/app/sensehub'
             filename = secure_filename(str(sensor.id) + "_image.jpeg")
-            path = os.path.join(root + '/static/uploads/sensor_images', secure_filename(filename))
+            path = os.path.join(
+                root + '/static/uploads/sensor_images', filename)
+            bytes_array = base64.b64decode(json_value['value'])
             with open(path, "wb+") as fh:
-                fh.write(base64.b64decode(json_value['value']))
+                fh.write(bytes_array)
             json_value['value'] = path[len(root):]
 
-        value = Value(sensor, json_value['type'], json_value[
-                      'value'], json_value['timestamp'], json_value['meta'])
-        db.session.add(value)
-        db.session.commit()
+            # if 'persist' does not exist in json, the second part will not be evaluated
+            if 'persist' in json_value['meta'] and json_value['meta']['persist'] == True:
+                hashname = hashlib.sha256()
+                to_hash = str(sensor.id) + str(datetime.now())
+                hashname.update(to_hash.encode('utf-8'))
+
+                filename = str(hashname.hexdigest()) + "_image.jpeg"
+                path = os.path.join(
+                    root + '/static/uploads/sensor_images', filename)
+                with open(path, "wb+") as fh:
+                    fh.write(bytes_array)
+                value = Value(sensor, json_value['type'], json_value[
+                              'value'], json_value['timestamp'], json_value['meta'])
+                db.session.add(value)
+                db.session.commit()
+
+        else:
+            value = Value(sensor, json_value['type'], json_value[
+                          'value'], json_value['timestamp'], json_value['meta'])
+            db.session.add(value)
+            db.session.commit()
     except BaseException as e:
+        print_flask(e)
         raise ValueError("Could not parse json" + str(e))
 
 
