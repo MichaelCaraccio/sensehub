@@ -3,6 +3,7 @@ from sensehub import db, login_manager
 from sensehub.localconstants import salt
 import hashlib
 from flask_login import LoginManager, login_user, logout_user
+from sensehub.json_type import JsonType
 
 class Salting(object):
     _salt = str(salt.encode('utf-8'))
@@ -110,7 +111,7 @@ class Value(db.Model):
     type = db.Column(db.String(128))
     value = db.Column(db.Text)
     timestamp = db.Column(db.DateTime)
-    meta = db.Column(db.Text)
+    meta = db.Column(JsonType)
 
     def __init__(self, sensor, type, value, datetime_obj, meta):
         self.sensor_id = sensor.id
