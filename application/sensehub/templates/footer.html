@@ -1,16 +1,8 @@
     {% include "analytics.html" %}
         <footer>
             {% block js %}
-            <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
-            <script type="text/x-mathjax-config">
-                  MathJax.Hub.Config({
-                  "HTML-CSS": {
-                  styles: {
-                  ".MathJax .mo, .MathJax .mi": {color: "black ! important"}}
-                  },
-                  tex2jax: {inlineMath: [['$','$'], ['\\\\(','\\\\)']],processEscapes: true}
-                  });
-            </script>
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js"></script>
+            <script type="text/javascript" src="{{url_for('static', filename='js/main.js')}}"></script>
             {% endblock js %}
             {% block extrajs %}
             {% endblock extrajs %}
