@@ -37,7 +37,7 @@ services:
           - ./.env
           - ./application/.env
       ports:
-          - "127.0.0.1:8000:5000"
+          - "8000:5000"
       depends_on:
           - sensehub_db
           #- sensehub_cache
