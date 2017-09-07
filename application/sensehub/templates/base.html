@@ -1,5 +1,19 @@
-{% include 'header.html' %}
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    {% include 'header.html' %}
+    {% block extraheaders %}
+    {% endblock extraheaders %}
+    <title>
+        {% block title %}
+        Please extend title block in your template.
+        {% endblock title %}
+    </title>
+</head>
 
+<body>
+
+    {% include 'navbar.html' %}
     <!-- main content -->
     <div class ="wrapper">
      <div class="container">
@@ -26,14 +40,17 @@
             <div class="page-header text-center col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <h1>
                     {% block page_title %}
-                    Hello.
+                    Please extend page_title block in your template.
                     {% endblock %}
                 </h1>
             </div>
-         </div>
+        </div>
+         <div class="row">
 
          {% block main %}
+         Please extend main block in your template.
          {% endblock main %}
+        </div>
 
          {% block add_rows %}
          {% endblock add_rows %}
@@ -41,3 +58,7 @@
     </div>
         </div>
 {% include 'footer.html' %}
+{% block extrafooter %}
+{% endblock extrafooter %}
+</body>
+</html>
