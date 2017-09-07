@@ -57,7 +57,25 @@ def print_flask(*args, **kwargs):
 
 def get_value_dict(value):
     '''returns a dict that will be transformed to json'''
-    return {'sensor_id': value.sensor_id, 'type': value.type, 'value': value.value, 'timestamp':value.timestamp, 'meta': value.meta}
+    return {
+        'sensor_id': value.sensor_id,
+        'type': value.type,
+        'value': value.value,
+        'timestamp':value.timestamp,
+        'meta': value.meta
+        }
+
+def get_sensor_dict(sensor):
+    '''returns a dict that will be transformed to json'''
+    return {
+        'user': sensor.user_id,
+        'name': sensor.name,
+        'hardware_type': sensor.hardware_type,
+        'is_public':sensor.is_public,
+        'type': sensor.type,
+        'last_ping': sensor.last_ping,
+        'last_value': get_value_dict(sensor.values.order_by(desc(Value.timestamp)).first())
+        }
 
 #############################################################
 # Ping
@@ -170,7 +188,7 @@ def route_api_sensors():
         set_sensors = get_all_visible_sensors(user_id)
         to_out = []
         for sensor in set_sensors:
-            to_out.append(sensor.id)
+            to_out.append(get_sensor_dict(sensor))
         return ok_json(to_out)  # TODO: add some infos
 
     except ValueError as e:
