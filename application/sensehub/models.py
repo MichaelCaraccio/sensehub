@@ -90,7 +90,7 @@ class Sensor(db.Model):
     is_public = db.Column(db.Boolean)
     type = db.Column(db.String(20))
     last_ping = db.Column(db.DateTime)
-    meta = db.Column(db.Text)
+    meta = db.Column(JsonType)
     ip = db.Column(db.String(15))
 
     def __init__(self, user, name, hardware_type, is_public, type, meta):
