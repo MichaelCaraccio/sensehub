@@ -1,0 +1,21 @@
+ {% extends "base/base.html" %}
+ {% block title %} {{sensor.name}} {% endblock title %}
+ {% block page_title %} {{sensor.name}} {% endblock page_title %}
+
+ {% block main %}
+
+<script>var sensor_id = {{sensor.id}};</script>
+
+<div class="album text-muted">
+  <div class="container">
+    <div class="row" id="app">
+      <img v-bind:src="sensor.value" />
+    </div>
+  </div>
+</div>
+
+{% endblock main %}
+
+{% block extrafooter %}
+<script type="text/javascript" src="{{url_for('static', filename='js/sensor.js')}}"></script>
+{% endblock extrafooter %}
