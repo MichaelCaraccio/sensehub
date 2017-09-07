@@ -4,8 +4,9 @@
     ¯\_(ツ)_/¯
 {% endblock page_title%}
 
+{% block page_subtitle %}
+    {{header}}
+{% endblock page_subtitle%}
+
 {% block main %}
-    <center>
-        <img src="{{ url_for('static', filename='img/merlim.png') }}" width="30%" height="30%" alt="error"/>
-    </center>
-{% endblock %}
+{% endblock main%}

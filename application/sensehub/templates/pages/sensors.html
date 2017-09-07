@@ -4,12 +4,46 @@
 
  {% block main %}
 
-<div id="app">
-        <div v-for="sensor in sensors">
-            [[sensor.name]]
-            [[sensor.last_value]]
-        </div>
-</div>
+ <div class="album text-muted">
+       <div class="container">
+
+         <div class="row" id="app">
+
+
+             <transition-group name="fade" class="card-deck">
+
+             <div class="card" v-for="sensor in sensors" :key="sensor.id" v-if="sensor.last_value.type == 'image'">
+               <a v-bind:href="[[sensor.url]]"><img class="card-img-top img-responsive" style="width:100%;" v-bind:src="sensor.last_value.value" data-holder-rendered="true"></a>
+               <div class="card-body">
+                 <h4 class="card-title">[[sensor.name]]</h4>
+               </div>
+               <div class="card-footer text-muted">
+                 [[sensor.last_value.timestamp]]
+               </div>
+             </div>
+
+            <div :key="sensor.id" class="card" v-else>
+              <div class="card-body">
+                <h4 class="card-title">[[sensor.name]]</h4>
+                <p class="card-text">
+                  <ul>
+                    <li> [[sensor.type]] </li>
+                    <li> [[sensor.value]] </li>
+                  </ul>
+                </p>
+              </div>
+              <div class="card-footer text-muted">
+                [[sensor.last_value.timestamp]]
+              </div>
+           </div>
+         </transition-group>
+
+
+         </div>
+
+       </div>
+     </div>
+
 {% endblock main %}
 
 {% block extrafooter %}
