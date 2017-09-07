@@ -76,10 +76,10 @@ def parse_json_value(sensor, json_value):
             bytes_array = base64.b64decode(json_value['value'])
             with open(path, "wb+") as fh:
                 fh.write(bytes_array)
-            json_value['value'] = path[len(root):]
 
             # if 'persist' does not exist in json, the second part will not be evaluated
             if 'persist' in json_value['meta'] and json_value['meta']['persist'] == True:
+                print_flask("in condition")
                 hashname = hashlib.sha256()
                 to_hash = str(sensor.id) + str(datetime.now())
                 hashname.update(to_hash.encode('utf-8'))
@@ -87,12 +87,14 @@ def parse_json_value(sensor, json_value):
                 filename = str(hashname.hexdigest()) + "_image.jpeg"
                 path = os.path.join(
                     root + '/static/uploads/sensor_images', filename)
+                json_value['value'] = path[len(root):]
                 with open(path, "wb+") as fh:
                     fh.write(bytes_array)
                 value = Value(sensor, json_value['type'], json_value[
                               'value'], json_value['timestamp'], json_value['meta'])
                 db.session.add(value)
                 db.session.commit()
+                print_flask("out condition" + filename)
 
         else:
             value = Value(sensor, json_value['type'], json_value[
