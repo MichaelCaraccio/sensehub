@@ -20,6 +20,17 @@ from werkzeug.utils import secure_filename
 
 
 #############################################################
+# Constants
+#############################################################
+
+root = '/app/sensehub'
+static = 'static'
+static_path= root + '/' + static
+upload_images = 'uploads/sensor_images'
+upload_images_path = static_path + '/' + upload_images
+
+
+#############################################################
 # Utils
 #############################################################
 
@@ -43,6 +54,10 @@ def authenticate_sensor(sensor_id, key):
 def print_flask(*args, **kwargs):
     print(*args, **kwargs)
     sys.stdout.flush()
+
+def get_value_dict(value):
+    '''returns a dict that will be transformed to json'''
+    return {'sensor_id': value.sensor_id, 'type': value.type, 'value': value.value, 'timestamp':value.timestamp, 'meta': value.meta}
 
 #############################################################
 # Ping
@@ -69,33 +84,25 @@ def route_api_ping():
 def parse_json_value(sensor, json_value):
     try:
         if json_value['type'] == 'image':
-            root = '/app/sensehub'
             filename = secure_filename(str(sensor.id) + "_image.jpeg")
-            path = os.path.join(
-                root + '/static/uploads/sensor_images', filename)
+            path = os.path.join(upload_images_path, filename)
             bytes_array = base64.b64decode(json_value['value'])
             with open(path, "wb+") as fh:
                 fh.write(bytes_array)
 
             # if 'persist' does not exist in json, the second part will not be evaluated
             if 'persist' in json_value['meta'] and json_value['meta']['persist'] == True:
-                print_flask("in condition")
                 hashname = hashlib.sha256()
                 to_hash = str(sensor.id) + str(datetime.now())
                 hashname.update(to_hash.encode('utf-8'))
 
                 filename = str(hashname.hexdigest()) + "_image.jpeg"
-                path = os.path.join(
-                    root + '/static/uploads/sensor_images', filename)
-                json_value['value'] = path[len(root):]
+                path = os.path.join(upload_images_path, filename)
                 with open(path, "wb+") as fh:
                     fh.write(bytes_array)
-                value = Value(sensor, json_value['type'], json_value[
-                              'value'], json_value['timestamp'], json_value['meta'])
+                value = Value(sensor, json_value['type'], url_for(static, filename=path[len(static_path)+1:]), json_value['timestamp'], json_value['meta'])
                 db.session.add(value)
                 db.session.commit()
-                print_flask("out condition" + filename)
-
         else:
             value = Value(sensor, json_value['type'], json_value[
                           'value'], json_value['timestamp'], json_value['meta'])
@@ -183,7 +190,7 @@ def route_api_sensor(sensor_id):
         if stop is None or start is None:
             value = Value.query.filter_by(sensor_id=sensor_id).order_by(
                 desc(Value.timestamp)).first()
-            to_out = [value.value]  # TODO: add some infos
+            to_out = [get_value_dict(value)]
             return ok_json(to_out)
 
         else:
@@ -191,7 +198,7 @@ def route_api_sensor(sensor_id):
                 Value.timestamp.between(start, stop)).all()
             to_out = []
             for value in values:
-                to_out.append(value.id)  # TODO: add some infos
+                to_out.append(get_value_dict(value))
             return ok_json(to_out)
 
     except ValueError as e:

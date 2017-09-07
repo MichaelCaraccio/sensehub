@@ -123,6 +123,7 @@ class Value(db.Model):
     def __repr__(self):
         return "<Value %r>" % self.id
 
+
 class GroupSensorRelation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column('group_id', db.Integer, db.ForeignKey('group.id'))
