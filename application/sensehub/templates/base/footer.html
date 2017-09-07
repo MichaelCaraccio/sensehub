@@ -1,0 +1,9 @@
+    {% include "base/analytics.html" %}
+        <footer>
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js"></script>
+            <script type="text/javascript" src="{{url_for('static', filename='js/main.js')}}"></script>
+
+            <div class="container-footer">
+                <div id="git-version">{{ config.GITVERSION }}</div>
+            </div>
+        </footer>

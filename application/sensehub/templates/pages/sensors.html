@@ -1,0 +1,18 @@
+
+{% extends "base/base.html" %}
+
+{% block title %} Sensors {% endblock title %}
+
+{% block page_title %} Sensors {% endblock page_title %}
+
+{% block main %}
+
+<div id="app">
+  [[ message ]]
+</div>
+{% endblock main %}
+
+
+{% block extrafooter %}
+<script type="text/javascript" src="{{url_for('static', filename='js/sensors.js')}}"></script>
+{% endblock extrafooter %}
