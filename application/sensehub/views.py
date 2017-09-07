@@ -25,11 +25,15 @@ def route_user_username(user_username):
 
 @app.route("/about/")
 def route_about():
-    return render_template("about.html", title="About", active="About")
+    return render_template("pages/about.html", active="About")
+
+@app.route("/sensors/")
+def route_sensors():
+    return render_template("pages/sensors.html", active="Sensors")
 
 @app.route("/")
 def route_home():
-    return render_template("index.html", title="index", active="Index")
+    return render_template("pages/index.html", active="Home")
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')
