@@ -68,6 +68,7 @@ def get_value_dict(value):
 def get_sensor_dict(sensor):
     '''returns a dict that will be transformed to json'''
     return {
+        'id': sensor.id,
         'user': sensor.user_id,
         'name': sensor.name,
         'hardware_type': sensor.hardware_type,
@@ -99,11 +100,27 @@ def route_api_ping():
 # New Value
 #############################################################
 
+# TODO need to sanitize user input
 def parse_json_value(sensor, json_value):
     try:
         if json_value['type'] == 'image':
+
+            # Get Latest image with name sensor_id_image.jpeg
             filename = secure_filename(str(sensor.id) + "_image.jpeg")
             path = os.path.join(upload_images_path, filename)
+            filename = url_for(static, filename=path[len(static_path)+1:])
+            image_live = get_live_image(filename)
+
+            # Save image in db if does not exist
+            if image_live is None:
+                value = Value(sensor, json_value['type'], filename, json_value['timestamp'], json_value['meta'])
+                db.session.add(value)
+                db.session.commit()
+            else :
+                image_live.timestamp = json_value['timestamp']
+                db.session.commit()
+
+            # Save image in Storage
             bytes_array = base64.b64decode(json_value['value'])
             with open(path, "wb+") as fh:
                 fh.write(bytes_array)
@@ -118,6 +135,7 @@ def parse_json_value(sensor, json_value):
                 path = os.path.join(upload_images_path, filename)
                 with open(path, "wb+") as fh:
                     fh.write(bytes_array)
+
                 value = Value(sensor, json_value['type'], url_for(static, filename=path[len(static_path)+1:]), json_value['timestamp'], json_value['meta'])
                 db.session.add(value)
                 db.session.commit()
@@ -147,6 +165,8 @@ def route_api_new_value():
 # Get Sensors
 #############################################################
 
+def get_live_image(filename):
+    return Value.query.filter_by(value=filename).first()
 
 def get_public_sensors():
     return Sensor.query.filter_by(is_public=True).all()
