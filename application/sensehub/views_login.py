@@ -47,5 +47,4 @@ def login():
             return abort(400)
 
         return redirect(next or url_for('route_home'))
-    return render_template('login.html', form=form)
-    
+    return render_template('pages/login.html', form=form)
