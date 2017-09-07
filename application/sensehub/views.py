@@ -5,23 +5,14 @@ from flask import Flask, render_template, redirect, url_for
 
 from sensehub import app
 from sensehub.models import User as User
+from sensehub.models import Sensor as Sensor
+
 from flask_login import login_user, logout_user
 
 @app.route("/logout/")
 def logout():
     logout_user()
     return redirect("/")
-
-@app.route("/user/<int:user_id>")
-def route_user_id(user_id):
-    user = User.query.get_or_404(user_id)
-    return redirect(url_for("route_user_username", user_username=user.username))
-
-
-@app.route("/user/<string:user_username>")
-def route_user_username(user_username):
-    user = User.query.filter_by(username=user_username).first_or_404()
-    return render_template("user.html", title=user.username, user=user)
 
 @app.route("/about/")
 def route_about():
@@ -30,6 +21,11 @@ def route_about():
 @app.route("/sensors/")
 def route_sensors():
     return render_template("pages/sensors.html", active="Sensors")
+
+@app.route("/sensor/<int:sensor_id>")
+def route_sensor_id(sensor_id):
+    sensor = Sensor.query.get_or_404(sensor_id)
+    return render_template("pages/sensor.html", active="Sensors", sensor=sensor)
 
 @app.route("/")
 def route_home():
