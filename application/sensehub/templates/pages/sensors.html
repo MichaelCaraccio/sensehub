@@ -1,17 +1,16 @@
+ {% extends "base/base.html" %}
+ {% block title %} Sensors {% endblock title %}
+ {% block page_title %} Sensors {% endblock page_title %}
 
-{% extends "base/base.html" %}
-
-{% block title %} Sensors {% endblock title %}
-
-{% block page_title %} Sensors {% endblock page_title %}
-
-{% block main %}
+ {% block main %}
 
 <div id="app">
-  [[ message ]]
+        <div v-for="sensor in sensors">
+            [[sensor.name]]
+            [[sensor.last_value]]
+        </div>
 </div>
 {% endblock main %}
-
 
 {% block extrafooter %}
 <script type="text/javascript" src="{{url_for('static', filename='js/sensors.js')}}"></script>
