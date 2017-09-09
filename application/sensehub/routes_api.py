@@ -28,6 +28,8 @@ static = 'static'
 static_path= root + '/' + static
 upload_images = 'uploads/sensor_images'
 upload_images_path = static_path + '/' + upload_images
+upload_videos = 'uploads/sensor_videos'
+upload_videos_path = static_path + '/' + upload_videos
 
 
 #############################################################
@@ -87,7 +89,7 @@ def get_sensor_dict(sensor):
 def route_api_ping():
     try:
         form = request.get_json()
-        sensor_id = form.get('id')
+        sensor_id = form.get('sensor_id')
         key = form.get('key')
         sensor = authenticate_sensor(sensor_id, key)
         sensor.last_ping = datetime.utcnow()
@@ -100,45 +102,66 @@ def route_api_ping():
 # New Value
 #############################################################
 
+def download_image(sensor, json_value):
+    # Get Latest image with name sensor_id_image.jpeg
+    filename = secure_filename(str(sensor.id) + "_image.jpeg")
+    path = os.path.join(upload_images_path, filename)
+    filename = url_for(static, filename=path[len(static_path)+1:])
+    image_live = get_live_image(filename)
+
+    # Save image in db if does not exist
+    if image_live is None:
+        value = Value(sensor, json_value['type'], filename, json_value['timestamp'], json_value['meta'])
+        db.session.add(value)
+        db.session.commit()
+    else :
+        image_live.timestamp = json_value['timestamp']
+        db.session.commit()
+
+    # Save image in Storage
+    bytes_array = base64.b64decode(json_value['value'])
+    with open(path, "wb+") as fh:
+        fh.write(bytes_array)
+
+    # if 'persist' does not exist in json, the second part will not be evaluated
+    if 'persist' in json_value['meta'] and json_value['meta']['persist'] == True:
+        hashname = hashlib.sha256()
+        to_hash = str(sensor.id) + str(datetime.now())
+        hashname.update(to_hash.encode('utf-8'))
+
+        filename = str(hashname.hexdigest()) + "_image.jpeg"
+        path = os.path.join(upload_images_path, filename)
+        with open(path, "wb+") as fh:
+            fh.write(bytes_array)
+
+        value = Value(sensor, json_value['type'], url_for(static, filename=path[len(static_path)+1:]), json_value['timestamp'], json_value['meta'])
+        db.session.add(value)
+        db.session.commit()
+
+def download_video(sensor, json_value):
+    # Save video in Storage
+    bytes_array = base64.b64decode(json_value['value'])
+
+    hashname = hashlib.sha256()
+    to_hash = str(sensor.id) + str(datetime.now())
+    hashname.update(to_hash.encode('utf-8'))
+
+    filename = str(hashname.hexdigest()) + "_video.h264"
+    path = os.path.join(upload_videos_path, filename)
+    with open(path, "wb+") as fh:
+        fh.write(bytes_array)
+
+    value = Value(sensor, json_value['type'], url_for(static, filename=path[len(static_path)+1:]), json_value['timestamp'], json_value['meta'])
+    db.session.add(value)
+    db.session.commit()
+
 # TODO need to sanitize user input
 def parse_json_value(sensor, json_value):
     try:
         if json_value['type'] == 'image':
-
-            # Get Latest image with name sensor_id_image.jpeg
-            filename = secure_filename(str(sensor.id) + "_image.jpeg")
-            path = os.path.join(upload_images_path, filename)
-            filename = url_for(static, filename=path[len(static_path)+1:])
-            image_live = get_live_image(filename)
-
-            # Save image in db if does not exist
-            if image_live is None:
-                value = Value(sensor, json_value['type'], filename, json_value['timestamp'], json_value['meta'])
-                db.session.add(value)
-                db.session.commit()
-            else :
-                image_live.timestamp = json_value['timestamp']
-                db.session.commit()
-
-            # Save image in Storage
-            bytes_array = base64.b64decode(json_value['value'])
-            with open(path, "wb+") as fh:
-                fh.write(bytes_array)
-
-            # if 'persist' does not exist in json, the second part will not be evaluated
-            if 'persist' in json_value['meta'] and json_value['meta']['persist'] == True:
-                hashname = hashlib.sha256()
-                to_hash = str(sensor.id) + str(datetime.now())
-                hashname.update(to_hash.encode('utf-8'))
-
-                filename = str(hashname.hexdigest()) + "_image.jpeg"
-                path = os.path.join(upload_images_path, filename)
-                with open(path, "wb+") as fh:
-                    fh.write(bytes_array)
-
-                value = Value(sensor, json_value['type'], url_for(static, filename=path[len(static_path)+1:]), json_value['timestamp'], json_value['meta'])
-                db.session.add(value)
-                db.session.commit()
+            download_image(sensor, json_value)
+        elif json_value['type'] == 'video':
+            download_video(sensor, json_value)
         else:
             value = Value(sensor, json_value['type'], json_value[
                           'value'], json_value['timestamp'], json_value['meta'])
