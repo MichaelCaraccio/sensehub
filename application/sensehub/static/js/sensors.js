@@ -23,7 +23,7 @@ function init()
         if (data.status === "ok") {
             data.message.sort((a,b)=> a.id-b.id);
             data.message.forEach(function(sensor){
-                sensor.url = '/sensors/'+ sensor.id;
+                sensor.url = '/sensor/'+ sensor.id;
                 app.sensors.push(sensor);
             });
             app.loading = false;

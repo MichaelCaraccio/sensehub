@@ -146,7 +146,7 @@ def download_video(sensor, json_value):
     to_hash = str(sensor.id) + str(datetime.now())
     hashname.update(to_hash.encode('utf-8'))
 
-    filename = str(hashname.hexdigest()) + "_video.h264"
+    filename = str(hashname.hexdigest()) + "_video.mp4"
     path = os.path.join(upload_videos_path, filename)
     with open(path, "wb+") as fh:
         fh.write(bytes_array)

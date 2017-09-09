@@ -21,10 +21,7 @@ function init()
     .then(function(data) {
         if (data.status === "ok") {
             data.message.forEach(function(sensor){
-                sensor.url = '/sensor/'+ sensor.id;
-                console.log(sensor);
                 app.sensor = sensor;
-
             });
             app.loading = false;
         }
