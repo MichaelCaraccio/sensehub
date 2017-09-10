@@ -3,17 +3,53 @@
  {% block page_title %} {{sensor.name}} {% endblock page_title %}
 
  {% block main %}
-
+ {% block extraheader %}
+   <link rel="stylesheet" type="text/css" href="https://unpkg.com/vue-event-calendar@1.4.8/dist/style.css">
+ {% endblock %}
 <script>var sensor_id = {{sensor.id}};</script>
 
 <div class="album text-muted">
   <div class="container">
-    <div class="row" id="app">
+    <!--<div class="row" id="app">
         <img v-bind:src="sensor.value" v-if="sensor.type=='image'"/>
         <video width="560" controls v-else-if="sensor.type=='video'">
             <source v-bind:src="sensor.value" type="video/mp4">
         </video>
         <p v-else> [[sensor.value]] </p>
+    </div>-->
+
+    <div class="row">
+      <div id="example">
+
+
+        <template>
+          <div>
+            <h2 class="t-center mt150">calendar</h2>
+            <vue-event-calendar :events="demoEvents">
+              <template scope="props">
+                <div v-for="(event, index) in props.showEvents" class="event-item">
+                  <!--<img v-bind:src="event.data.value" v-if="event.data.type=='image'"/>
+
+                  <video preload="metadata" width="200" controls v-else-if="event.data.type=='video'">
+                      <source v-bind:src="event.data.value" type="video/mp4">
+                  </video>
+
+                  <p v-else> [[event.data.value]] </p>
+
+                  <p>[[event]]</p>-->
+                  <a href="#" @click="setCurrent([[index]])">[[event.data.value]]</a>
+
+                </div>
+              </template>
+              <component :src="currentSlide.src" :is="current" :key="currentSlide"></component>
+
+            </vue-event-calendar>
+          </div>
+        </template>
+
+
+        <!--<vue-event-calendar :events="demoEvents"></vue-event-calendar>-->
+      </div>
     </div>
   </div>
 </div>
@@ -22,10 +58,6 @@
 
 
 {% block extrafooter %}
-<script type="text/javascript" src="{{url_for('static', filename='js/sensor.js')}}"></script>
 <script type="text/javascript" src="https://unpkg.com/vue-event-calendar@1.4.8/dist/index.js"></script>
-{% endblock %}
-
-{% block extraheader %}
-  <link rel="stylesheet" type="text/css" href="https://unpkg.com/vue-event-calendar@1.4.8/dist/style.css">
+<script type="text/javascript" src="{{url_for('static', filename='js/sensor.js')}}"></script>
 {% endblock %}
