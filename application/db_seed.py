@@ -80,6 +80,20 @@ def create_sensors(users, groups):
     db.session.commit()
     add_sensor_to_group(sensor5, groups[0])
 
+    sensor6 = Sensor(users[1], "Sensor 6",
+                     "Camera - Photo Pi", True, "image", {})
+    sensor6.key = "1234"
+    db.session.add(sensor6)
+    db.session.commit()
+    add_sensor_to_group(sensor6, groups[0])
+
+    sensor7 = Sensor(users[1], "Sensor 7",
+                     "Camera - Video Pi", True, "video", {})
+    sensor7.key = "1234"
+    db.session.add(sensor7)
+    db.session.commit()
+    add_sensor_to_group(sensor7, groups[0])
+
     return [sensor1, sensor2, sensor3, sensor4, sensor5]
 
 
