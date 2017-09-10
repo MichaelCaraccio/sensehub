@@ -63,7 +63,7 @@ def get_value_dict(value):
         'sensor_id': value.sensor_id,
         'type': value.type,
         'value': value.value,
-        'timestamp':value.timestamp,
+        'timestamp':value.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
         'meta': value.meta
         }
 
