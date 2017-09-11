@@ -65,7 +65,7 @@ def get_value_dict(value):
         'value': value.value,
         'timestamp':value.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
         'meta': value.meta
-        }
+        } if value is not None else {}
 
 def get_sensor_dict(sensor):
     '''returns a dict that will be transformed to json'''

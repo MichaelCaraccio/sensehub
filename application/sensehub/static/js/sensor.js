@@ -2,66 +2,29 @@
 
 Vue.use(VueEventCalendar.default, {locale: 'en', color: '#4fc08d'}) //hack here (.default)
 
-Vue.component('video-slide', {
-  template: '<video autoplay controls>
-              <source :src="src" type="video/mp4">
-            </video>'
-          ,
+Vue.component('video-component', {
+  template: '#my-video-component',
   props: ['src']
 })
+
 
 var app = new Vue({
   el: '#example',
   delimiters: ['[[', ']]'],
-  data: {
-    demoEvents : [],
-    current: 'video-slide',
-    currentSlide: 0,
-    slides:[
-    	{
-      	id: 0,
-      	src: 'http://www.808.dk/vstreamer.asp?video=gizmo.mp4',
-        time: 10,
-        type: 3
-      },
-      {
-      	id: 1,
-      	src: 'http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4',
-        time: 150,
-        type: 3
-      },
-      {
-      	id: 2,
-      	src: 'http://placehold.it/350x350',
-        time: 150,
-        type: 2
-      }
-    ]
+  data: function(){
+      return {
+        demoEvents : [],
+        currentLink: "#",
+        current: "video-component",
+        seen: false
+    };
   },
-  mounted: function(){
-  this.currentSlide = this.slides[0];
-},
   methods: {
-  	setCurrent: function(index){
-      if (index == -1) {
-        return;
+      setCurrent: function(source){
+          this.seen = true;
+          this.currentLink = source;
+          this.current = 'video-component';
       }
-
-    	this.currentSlide = this.slides[index];
-
-      switch(this.slides[index].type) {
-      	case "photo":
-        	this.current = 'image-slide';
-          break;
-
-        case "video":
-        	this.current = 'video-slide';
-          break;
-
-        default:
-        break;
-      }
-    }
   }
 });
 
@@ -77,18 +40,18 @@ function getValues()
   .then((resp) => resp.json())
   .then(function(data) {
     if (data.status === "ok") {
-        data.message.forEach(function(sensor){
+        data.message.forEach(function(value){
 
             // TODO less data
-            console.log(sensor);
-            app.demoEvents.push({
-              date: sensor.timestamp.replace(/-/g, '/'),
-              data: sensor,
-              type: sensor.type,
-              title: 'test',
-              src: sensor.value,
-              desc: sensor.timestamp
-            });
+            var newEvent =
+                {
+                  date: value.timestamp.replace(/-/g, '/'),
+                  data: value,
+                  title: "Video",
+                  desc: "tegfds"
+              };
+            console.log(newEvent);
+            app.demoEvents.push(newEvent);
         });
     }
   }).catch((error) => console.log("Error getting the data: "+error));
