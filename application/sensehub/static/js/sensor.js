@@ -53,14 +53,15 @@ function getValues()
         data.message.forEach(function(value){
           console.log(value)
 
-            var newEvent =
-                {
+            var newEvent = {
                   date: value.timestamp.replace(/-/g, '/'),
                   data: value,
                   title: "Title"
-              };
-            console.log(newEvent);
+            };
             app.demoEvents.push(newEvent);
+
+            // Load last media
+            app.setCurrent(value.value, value.type);
         });
     }
   }).catch((error) => console.log("Error getting the data: "+error));
