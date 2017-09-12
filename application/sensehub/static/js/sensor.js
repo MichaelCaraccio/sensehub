@@ -7,6 +7,10 @@ Vue.component('video-component', {
   props: ['src']
 })
 
+Vue.component('image-component', {
+  template: '#my-image-component',
+  props: ['src']
+})
 
 var app = new Vue({
   el: '#calendar',
@@ -16,14 +20,20 @@ var app = new Vue({
         demoEvents : [],
         currentLink: "#",
         current: "video-component",
-        seen: false
+        seen: false,
+        type: "video"
     };
   },
   methods: {
-      setCurrent: function(source){
+      setCurrent: function(source, type){
           this.seen = true;
           this.currentLink = source;
-          this.current = 'video-component';
+
+          if(type == "video"){
+            this.current = 'video-component';
+          } else if (type == "image") {
+            this.current = 'image-component';
+          }
       }
   }
 });
@@ -41,13 +51,13 @@ function getValues()
   .then(function(data) {
     if (data.status === "ok") {
         data.message.forEach(function(value){
+          console.log(value)
 
             var newEvent =
                 {
                   date: value.timestamp.replace(/-/g, '/'),
                   data: value,
-                  title: "Video",
-                  desc: "tegfds"
+                  title: "Title"
               };
             console.log(newEvent);
             app.demoEvents.push(newEvent);
