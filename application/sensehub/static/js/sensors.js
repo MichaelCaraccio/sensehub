@@ -11,6 +11,14 @@ var app = new Vue({
 
 window.onload = init
 
+function compareType(a,b) {
+  if (a.type < b.type)
+    return -1;
+  if (a.type > b.type)
+    return 1;
+  return 0;
+}
+
 function init()
 {
     app.loading = true;
@@ -26,6 +34,8 @@ function init()
                 sensor.url = '/sensor/'+ sensor.id;
                 app.sensors.push(sensor);
             });
+            console.log(app.sensors);
+            app.sensors.sort(compareType);
             app.loading = false;
         }
     }).catch((error) => console.log("Error getting the data: "+error));

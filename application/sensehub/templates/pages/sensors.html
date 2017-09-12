@@ -1,60 +1,95 @@
  {% extends "base/base.html" %}
  {% block title %} Sensors {% endblock title %}
  {% block page_title %} Sensors {% endblock page_title %}
-
+{% block page_subtitle %} Public sensors list {% endblock %}
  {% block main %}
 
- <div class="album text-muted">
-       <div class="container">
+<div class="album text-muted">
+  <div class="container">
+    <div id="app">
 
-         <div class="row" id="app">
+        <!-- *************************************************************** -->
+        <!-- TYPE : IMAGE                                                    -->
+        <!-- *************************************************************** -->
 
+        <section class="jumbotron text-center">
+          <p class="lead text-muted"><i class="fa fa-camera-retro fa-3x" aria-hidden="true"></i></p>
+        </section>
 
-             <transition-group name="fade" class="card-deck">
+        <div class="row">
+        <transition-group name="fade" class="card-deck mx-auto">
 
-             <div class="card" v-for="sensor in sensors" :key="sensor.id" v-if="sensor.last_value.type == 'image'">
-               <a v-bind:href="[[sensor.url]]"><img class="card-img-top img-responsive" style="width:100%;" v-bind:src="sensor.last_value.value" data-holder-rendered="true"></a>
-               <div class="card-body">
-                 <h4 class="card-title">[[sensor.name]]</h4>
-               </div>
-               <div class="card-footer text-muted">
-                 [[sensor.last_value.timestamp]]
-               </div>
-             </div>
-             <div :key="sensor.id" class="card" v-else-if="sensor.last_value.type == 'video'">
-                 <a v-bind:href="[[sensor.url]]" style="width:100%;">
-                   <video class="card-img-top img-responsive" >
-                       <source v-bind:src="sensor.last_value.value" type="video/mp4">
-                   </video>
-               </a>
-               <div class="card-body">
-                 <h4 class="card-title">[[sensor.name]]</h4>
-               </div>
-               <div class="card-footer text-muted">
-                 [[sensor.last_value.timestamp]]
-               </div>
-             </div>
-             <div :key="sensor.id" class="card" v-else>
-               <div class="card-body">
-                 <h4 class="card-title">[[sensor.name]]</h4>
-                 <p class="card-text">
-                   <ul>
-                     <li> [[sensor.type]] </li>
-                     <li> [[sensor.value]] </li>
-                   </ul>
-                 </p>
-               </div>
-               <div class="card-footer text-muted">
-                 [[sensor.last_value.timestamp]]
-               </div>
+          <div class="card" v-for="sensor in sensors" :key="sensor.id" style="width: 20rem;" v-if="sensor.last_value.type == 'image'">
+            <a v-bind:href="[[sensor.url]]"><img class="card-img-top img-responsive" style="width:100%;" v-bind:src="sensor.last_value.value" data-holder-rendered="true"></a>
+            <div class="card-body">
+              <h4 class="card-title">[[sensor.name]]</h4>
             </div>
-         </transition-group>
+            <div class="card-footer text-muted">
+              [[sensor.last_value.timestamp]]
+            </div>
+          </div>
+        </transition-group>
+        </div>
+
+        <!-- *************************************************************** -->
+        <!-- TYPE : VIDEO                                                    -->
+        <!-- *************************************************************** -->
+
+        <section class="jumbotron text-center">
+          <p class="lead text-muted"><i class="fa fa-video-camera fa-3x" aria-hidden="true"></i></p>
+        </section>
+
+        <div class="row">
+        <transition-group name="fade" class="card-deck mx-auto">
+
+          <div v-for="sensor in sensors" :key="sensor.id" class="card" style="width: 20rem;" v-if="sensor.last_value.type == 'video'">
+            <a v-bind:href="[[sensor.url]]" style="width:100%;">
+              <video class="card-img-top img-responsive" >
+                <source v-bind:src="sensor.last_value.value" type="video/mp4">
+              </video>
+            </a>
+            <div class="card-body">
+              <h4 class="card-title">[[sensor.name]]</h4>
+            </div>
+            <div class="card-footer text-muted">
+              [[sensor.last_value.timestamp]]
+            </div>
+          </div>
+
+        </transition-group>
+        </div>
 
 
-         </div>
+        <!-- *************************************************************** -->
+        <!-- TYPE : OTHER                                                    -->
+        <!-- *************************************************************** -->
 
-       </div>
-     </div>
+        <section class="jumbotron text-center">
+          <p class="lead text-muted"><i class="fa fa-info-circle fa-3x" aria-hidden="true"></i></p>
+        </section>
+        <div class="row">
+        <transition-group name="fade" class="card-deck mx-auto">
+
+          <div v-for="sensor in sensors" :key="sensor.id" class="card" style="width: 20rem;" v-if="sensor.last_value.type != 'video' && sensor.last_value.type != 'image'">
+            <div class="card-body">
+              <h4 class="card-title">[[sensor.name]]</h4>
+              <p class="card-text">
+                <ul>
+                  <li> [[sensor.type]] </li>
+                  <li> [[sensor.hardware_type]] </li>
+                </ul>
+              </p>
+            </div>
+            <div class="card-footer text-muted">
+              [[sensor.last_value.timestamp]]
+            </div>
+          </div>
+
+        </transition-group>
+        </div>
+    </div>
+  </div>
+</div>
 
 {% endblock main %}
 
