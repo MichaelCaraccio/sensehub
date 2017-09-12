@@ -4,52 +4,33 @@
 
  {% block main %}
  {% block extraheader %}
-   <link rel="stylesheet" type="text/css" href="https://unpkg.com/vue-event-calendar@1.4.8/dist/style.css">
  {% endblock %}
 <script>var sensor_id = {{sensor.id}};</script>
 
+<template id="my-video-component">
+    <video width="100%" autoplay controls>
+        <source :src="src" type="video/mp4" />
+    </video>
+</template>
+
 <div class="album text-muted">
   <div class="container">
-    <!--<div class="row" id="app">
-        <img v-bind:src="sensor.value" v-if="sensor.type=='image'"/>
-        <video width="560" controls v-else-if="sensor.type=='video'">
-            <source v-bind:src="sensor.value" type="video/mp4">
-        </video>
-        <p v-else> [[sensor.value]] </p>
-    </div>-->
 
-    <template id="my-video-component">
-        <div  style="width=300px;">
-        <video autoplay controls>
-            <source :src="src" type="video/mp4" />
-        </video>
-        </div>
-    </template>
-
-    <div class="row">
-
-      <div id="example">
-
+    <div class="row" id="calendar">
+      <div class="col-md-8 col-sm-12">
         <component :src="currentLink" :is="current" :key="currentLink" v-if="seen"></component>
-        <template>
-          <div>
-            <h2 class="t-center mt150">calendar</h2>
-            <vue-event-calendar :events="demoEvents">
-              <template scope="props">
-                <div v-for="(event, index) in props.showEvents" class="event-item">
-                  <img v-bind:src="event.data.value" v-if="event.data.type=='image'"/>
+      </div>
 
-
-                <a href="#"  @click="setCurrent(event.data.value);" v-else-if="event.data.type=='video'">[[event.data.timestamp]]</a>
-
-                  <p v-else> [[event.data.value]] </p>
-
-                </div>
-              </template>
-            </vue-event-calendar>
-          </div>
-        </template>
-
+      <div class="col-md-4 col-sm-12">
+          <vue-event-calendar :events="demoEvents">
+            <template scope="props">
+              <div v-for="(event, index) in props.showEvents" class="event-item">
+                <img v-bind:src="event.data.value" v-if="event.data.type=='image'"/>
+                <a href="#stay_here" name="stay_here" @click="setCurrent(event.data.value);" v-else-if="event.data.type=='video'">[[event.data.timestamp]]</a>
+                <p v-else> [[event.data.value]] </p>
+              </div>
+            </template>
+          </vue-event-calendar>
       </div>
     </div>
   </div>

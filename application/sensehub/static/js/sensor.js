@@ -9,7 +9,7 @@ Vue.component('video-component', {
 
 
 var app = new Vue({
-  el: '#example',
+  el: '#calendar',
   delimiters: ['[[', ']]'],
   data: function(){
       return {
@@ -42,7 +42,6 @@ function getValues()
     if (data.status === "ok") {
         data.message.forEach(function(value){
 
-            // TODO less data
             var newEvent =
                 {
                   date: value.timestamp.replace(/-/g, '/'),
