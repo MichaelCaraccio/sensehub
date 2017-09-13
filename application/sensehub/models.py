@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from sensehub import db, login_manager
 from sensehub.localconstants import salt
-import hashlib
+import hashlib, datetime
 from flask_login import LoginManager, login_user, logout_user
 from sensehub.json_type import JsonType
 
@@ -21,6 +21,13 @@ class Salting(object):
     @staticmethod
     def is_password_correct(password, salted_password):
         return Salting.get_salted_password(password) == salted_password
+
+    @staticmethod
+    def create_key(*args):
+        l = list(args)
+        l.append(datetime.datetime.utcnow())
+        str_fields = ''.join([str(arg) for arg in l])
+        return Salting._salt_pass(str_fields)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -100,6 +107,7 @@ class Sensor(db.Model):
         self.is_public = is_public
         self.type = type
         self.meta = meta
+        self.key = Salting.create_key(user, name, hardware_type, is_public, type, meta)
 
     def __repr__(self):
         return "<Sensor %r>" % self.id

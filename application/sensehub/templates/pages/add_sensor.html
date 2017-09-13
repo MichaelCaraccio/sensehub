@@ -1,0 +1,60 @@
+ {% extends "base/base.html" %}
+ {% block title %} Add sensor {% endblock title %}
+ {% block page_title %} Add new sensor {% endblock page_title %}
+ {% block page_subtitle %} {% endblock page_subtitle %}
+{% block main %}
+
+<div id="form-container">
+ <form class="container" id="needs-validation" novalidate v-if="state == 'form'">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" placeholder="Sensor name" required>
+      </div>
+
+    <div class="form-group">
+      <label for="hardware_type">Hardware type</label>
+      <select selected="" class="form-control" id="hardware_type" required>
+          <option disabled selected value> — select an option — </option>
+          <option value="raspberry_pi">Raspberry Pi</option>
+          <option value="arduino">Arduino</option>
+          <option value="beaglebone">Beaglebone</option>
+          <option value="drone">Drone</option>
+          <option value="other">Other</option>
+        </select>
+    </div>
+
+    <div class="form-check">
+      <label class="form-check-label">
+          <input id="public" type="checkbox" class="form-check-input">
+          Public ?
+        </label>
+    </div>
+
+    <div class="form-group">
+      <label for="type">Sensor type</label>
+      <select selected="" class="form-control" id="type" required>
+          <option disabled selected value> — select an option — </option>
+          <option value="temp">Temperature</option>
+          <option value="humidity">Humidity</option>
+          <option value="video">Video</option>
+          <option value="image">Image</option>
+          <option value="pir">PIR</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Get key</button>
+  </form>
+
+  <div id="key" v-if="state == 'received'">
+    <p>[[key]]</p><p> [[id]]</p>
+  </div>
+  <div id="loading" v-if="state=='sent'">
+    ITSLOADING
+  </div>
+
+  {% endblock main %}
+
+  {% block extrafooter %}
+  <script type="text/javascript" src="{{url_for('static', filename='js/add_sensor.js')}}"></script>
+
+  {% endblock %}

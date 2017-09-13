@@ -8,9 +8,7 @@
 <script>var sensor_id = {{sensor.id}};</script>
 
 <template id="my-video-component">
-    <video width="100%" autoplay controls>
-        <source :src="src" type="video/mp4" />
-    </video>
+
 </template>
 
 <template id="my-image-component">
@@ -22,15 +20,15 @@
 
     <div class="row" id="calendar">
       <div class="col-md-8 col-sm-12">
-        <component :src="currentLink" :is="current" :key="currentLink" v-if="seen"></component>
+        <component :src="currentLink" :data="currentData" :is="current" :key="currentLink" v-if="seen"></component>
       </div>
 
       <div class="col-md-4 col-sm-12">
           <vue-event-calendar :events="demoEvents">
             <template scope="props">
               <div v-for="(event, index) in props.showEvents" class="event-item">
-                <img class="sensor-image-thumb" width="100%" @click="setCurrent(event.data.value, event.data.type);" :src="event.data.value" v-if="event.data.type=='image'"/>
-                <a href="#stay_here" name="stay_here" @click="setCurrent(event.data.value, event.data.type);" v-else-if="event.data.type=='video'">[[event.data.timestamp]]</a>
+                <img class="sensor-image-thumb" width="100%" @click="setCurrent(index);" :src="event.data.value" v-if="event.data.type=='image'"/>
+                <a href="#stay_here" name="stay_here" @click="setCurrent(index);"  v-else-if="event.data.type=='video'">[[event.data.timestamp]]</a>
                 <p v-else> [[event.data.value]] </p>
               </div>
             </template>

@@ -1,8 +1,15 @@
- {% extends "base/base.html" %}
- {% block title %} Sensors {% endblock title %}
- {% block page_title %} Sensors {% endblock page_title %}
-{% block page_subtitle %} Public sensors list {% endblock %}
- {% block main %}
+  {% extends "base/base.html" %}
+  {% block title %} Sensors {% endblock title %}
+  {% block page_title %} Sensors {% endblock page_title %}
+  {% block page_subtitle %}
+    <p>Public sensors list</p>
+    <a href="/sensor/add">
+      <button type="button" class="btn btn-outline-success">
+        <i class="fa fa-plus" aria-hidden="true"></i> Add sensor
+      </button>
+    </a>
+  {% endblock %}
+  {% block main %}
 
 <div class="album text-muted">
   <div class="container">

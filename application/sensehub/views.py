@@ -27,6 +27,10 @@ def route_sensor_id(sensor_id):
     sensor = Sensor.query.get_or_404(sensor_id)
     return render_template("pages/sensor.html", active="Sensors", sensor=sensor)
 
+@app.route("/sensor/add/")
+def route_add_sensor():
+    return render_template("pages/add_sensor.html", active="Sensors")
+
 @app.route("/")
 def route_home():
     return render_template("pages/index.html", active="Home")

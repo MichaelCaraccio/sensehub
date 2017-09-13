@@ -99,7 +99,7 @@ def route_api_ping():
 
 
 #############################################################
-# New Value
+# Add Value
 #############################################################
 
 def download_image(sensor, json_value):
@@ -185,6 +185,37 @@ def route_api_new_value():
         return error_json(str(e))
 
 #############################################################
+# Add Sensors
+#############################################################
+
+@app.route("/api/sensor/add/", methods=["PUT"])
+@login_required
+def route_api_add_sensor():
+    try:
+        form = request.get_json()
+        print_flask(form)
+
+        print_flask(current_user)
+        user = current_user
+        name = form['name']
+        hardware_type = form['hardware_type']
+        is_public = form['public']
+        type = form['type']
+        meta = {}
+
+        # Create sensor
+        sensor = Sensor(user, name, hardware_type, is_public, type, meta)
+
+        # Add in database
+        db.session.add(sensor)
+        db.session.commit()
+
+        return ok_json({"key" : sensor.key, "sensor_id" : sensor.id})
+
+    except ValueError as e:
+        return error_json(str(e))
+
+#############################################################
 # Get Sensors
 #############################################################
 
@@ -248,19 +279,21 @@ def route_api_sensor(sensor_id):
 
         start = request.args.get('from', None)
         stop = request.args.get('to', None)
+        to_out = {'key':'', 'values':[]}
+
+        # TODO: fill to_out['key'] with the key only if the sensor's owner is current_user. then show it on the page
+
         if stop is None or start is None:
             value = Value.query.filter_by(sensor_id=sensor_id).order_by(
                 desc(Value.timestamp)).first()
-            to_out = [get_value_dict(value)]
-            return ok_json(to_out)
-
+            to_out['values'].append(get_value_dict(value))
         else:
             values = Value.query.filter_by(sensor_id=sensor_id).filter(
                 Value.timestamp.between(start, stop)).all()
-            to_out = []
             for value in values:
-                to_out.append(get_value_dict(value))
-            return ok_json(to_out)
+                to_out['values'].append(get_value_dict(value))
+
+        return ok_json(to_out)
 
     except ValueError as e:
         return error_json(str(e))

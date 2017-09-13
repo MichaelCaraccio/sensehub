@@ -3,8 +3,17 @@
 Vue.use(VueEventCalendar.default, {locale: 'en', color: '#4fc08d'}) //hack here (.default)
 
 Vue.component('video-component', {
-  template: '#my-video-component',
-  props: ['src']
+  template: `<div class="card text-center">
+              <div class="card-body">
+                <video width="100%" autoplay controls>
+                    <source :src="src" type="video/mp4" />
+                </video>
+              </div>
+              <div class="card-footer text-muted">
+                {{data.timestamp}}
+              </div>
+            </div>`,
+  props: ['src', 'data']
 })
 
 Vue.component('image-component', {
@@ -18,6 +27,7 @@ var app = new Vue({
   data: function(){
       return {
         demoEvents : [],
+        currentData : [],
         currentLink: "#",
         current: "video-component",
         seen: false,
@@ -25,13 +35,16 @@ var app = new Vue({
     };
   },
   methods: {
-      setCurrent: function(source, type){
+      setCurrent: function(index){
+          var data = app.demoEvents[index].data;
+          console.log(data);
           this.seen = true;
-          this.currentLink = source;
+          this.currentLink = data.value;
+          this.currentData = data;
 
-          if(type == "video"){
+          if(data.type == "video"){
             this.current = 'video-component';
-          } else if (type == "image") {
+          } else if (data.type == "image") {
             this.current = 'image-component';
           }
       }
@@ -50,7 +63,7 @@ function getValues()
   .then((resp) => resp.json())
   .then(function(data) {
     if (data.status === "ok") {
-        data.message.forEach(function(value){
+        data.message.values.forEach(function(value){
           console.log(value)
 
             var newEvent = {
@@ -61,7 +74,7 @@ function getValues()
             app.demoEvents.push(newEvent);
 
             // Load last media
-            app.setCurrent(value.value, value.type);
+            app.setCurrent(0);
         });
     }
   }).catch((error) => console.log("Error getting the data: "+error));
